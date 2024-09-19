@@ -1,0 +1,6 @@
+artifact_location: file:///home/ntsation/repos/project-root/mlruns/948403887836398224
+creation_time: 1726786355956
+experiment_id: '948403887836398224'
+last_update_time: 1726786355956
+lifecycle_stage: active
+name: iris_classification

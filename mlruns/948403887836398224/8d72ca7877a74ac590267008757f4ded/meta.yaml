@@ -1,0 +1,15 @@
+artifact_uri: file:///home/ntsation/repos/project-root/mlruns/948403887836398224/8d72ca7877a74ac590267008757f4ded/artifacts
+end_time: 1726786361711
+entry_point_name: ''
+experiment_id: '948403887836398224'
+lifecycle_stage: active
+run_id: 8d72ca7877a74ac590267008757f4ded
+run_name: respected-gnu-695
+run_uuid: 8d72ca7877a74ac590267008757f4ded
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1726786356085
+status: 3
+tags: []
+user_id: ntsation
