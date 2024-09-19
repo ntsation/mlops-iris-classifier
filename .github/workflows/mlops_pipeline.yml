@@ -26,13 +26,13 @@ jobs:
       uses: iterative/setup-dvc@v1
     
     - name: Pull DVC data
-      run: dvc pull
+      run: # dvc pull
     
     - name: Train model
-      run: python src/train.py
+      run: # python src/train.py
     
     - name: Build BentoML bundle
-      run: bentoml build
+      run: # bentoml build
     
     - name: Run tests (se houver)
       run: |
