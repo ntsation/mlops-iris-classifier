@@ -1,17 +1,17 @@
-# Projeto MLOps com Classificador de Íris
+# MLOps Project with Iris Classifier
 
-Este projeto demonstra uma pipeline MLOps completa usando um classificador de íris como exemplo. Ele integra várias ferramentas e práticas modernas de MLOps, incluindo controle de versão de dados, experimentação, empacotamento de modelos e implantação contínua.
+This project demonstrates a complete MLOps pipeline using an iris classifier as an example. It integrates various modern MLOps tools and practices, including data versioning, experiment tracking, model packaging, and continuous deployment.
 
-## Tecnologias Utilizadas
+## Technologies Used
 
-- **Python**: Linguagem de programação principal
-- **scikit-learn**: Para o modelo de classificação
-- **MLflow**: Para rastreamento de experimentos e registro de modelos
-- **BentoML**: Para empacotamento e servir o modelo
-- **DVC (Data Version Control)**: Para versionamento de dados
-- **GitHub Actions**: Para CI/CD
+- **Python**: Primary programming language
+- **scikit-learn**: For the classification model
+- **MLflow**: For experiment tracking and model registry
+- **BentoML**: For model packaging and serving
+- **DVC (Data Version Control)**: For data versioning
+- **GitHub Actions**: For CI/CD
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 .
@@ -32,108 +32,108 @@ Este projeto demonstra uma pipeline MLOps completa usando um classificador de í
 └── README.md
 ```
 
-## Configuração
+## Setup
 
-1. Clone o repositório:
+1. Clone the repository:
    ```
    git clone https://github.com/ntsation/project-mlops.git
    cd project-mlops
    ```
 
-2. Crie e ative um ambiente virtual:
+2. Create and activate a virtual environment:
    ```
    python -m venv venv
-   source venv/bin/activate  # No Windows use `venv\Scripts\activate`
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
    ```
 
-3. Instale as dependências:
+3. Install the dependencies:
    ```
    pip install -r requirements.txt
    ```
 
-4. Configure o DVC:
+4. Set up DVC:
    ```
    dvc init
    dvc add data/iris.csv
    ```
 
-   Para uso local:
+   For local usage:
    ```
-   dvc remote add -d localremote /caminho/para/armazenamento/local
+   dvc remote add -d localremote /path/to/local/storage
    ```
 
-   Para uso com Google Drive (recomendado para CI/CD):
+   For Google Drive (recommended for CI/CD):
    ```
    dvc remote add -d myremote gdrive://your-drive-id
    ```
 
-   Depois de configurar o remote:
+   After setting up the remote:
    ```
    dvc push
    ```
 
-## Uso
+## Usage
 
-### Treinamento do Modelo
+### Training the Model
 
-Para treinar o modelo:
+To train the model:
 
 ```
 python src/train.py
 ```
 
-Isso treinará o modelo, registrará métricas no MLflow e salvará o modelo usando BentoML.
+This will train the model, log metrics with MLflow, and save the model using BentoML.
 
-### Servindo o Modelo
+### Serving the Model
 
-Para servir o modelo localmente:
+To serve the model locally:
 
 ```
 bentoml serve src/serve.py:svc
 ```
 
-### Construindo o BentoML Bundle
+### Building the BentoML Bundle
 
-Para construir um bundle BentoML:
+To build a BentoML bundle:
 
 ```
 bentoml build
 ```
 
-## Pipeline CI/CD
+## CI/CD Pipeline
 
-O arquivo `.github/workflows/mlops_pipeline.yml` define um pipeline CI/CD que é acionado em pushes para a branch main. 
+The file `.github/workflows/mlops_pipeline.yml` defines a CI/CD pipeline that is triggered on pushes to the main branch.
 
-**Nota Importante sobre DVC e CI/CD:**
-Se você estiver usando o DVC com armazenamento local, o pipeline CI/CD no GitHub Actions falhará ao tentar acessar os dados no DVC. Isso ocorre porque o armazenamento local não está acessível no ambiente de CI/CD remoto. 
+**Important Note on DVC and CI/CD:**
+If you're using DVC with local storage, the CI/CD pipeline on GitHub Actions will fail when trying to access the data in DVC. This is because local storage is not accessible in the remote CI/CD environment.
 
-Para resolver esse problema, você tem algumas opções:
+To address this issue, you have a few options:
 
-1. Use um armazenamento remoto para o DVC, como Google Drive, AWS S3, ou similar. Isso permitirá que o pipeline CI/CD acesse os dados.
+1. Use a remote DVC storage solution like Google Drive, AWS S3, or similar. This will allow the CI/CD pipeline to access the data.
+   
+2. If you must use local storage, consider adding the data to the Git repository for CI/CD purposes. You can create a separate branch for CI/CD that includes the data.
 
-2. Se você precisa manter o armazenamento local, considere adicionar os dados ao repositório Git para fins de CI/CD. Neste caso, você pode criar um branch separado para CI/CD que inclui os dados.
+3. Modify the CI/CD pipeline to skip the DVC pull step when using local storage.
 
-3. Modifique o pipeline CI/CD para pular a etapa de pull do DVC quando estiver usando armazenamento local.
+For local execution, using local DVC storage will work without issues.
 
-Para execução local, o uso de armazenamento local do DVC funcionará sem problemas.
+The pipeline includes:
 
-O pipeline inclui:
+- Dependency installation
+- DVC setup and pulling the data (may fail with local storage)
+- Model training
+- BentoML bundle build
+- Tests (simulated)
+- Deployment (simulated)
 
-- Instalação de dependências
-- Configuração do DVC e pull dos dados (pode falhar com armazenamento local)
-- Treinamento do modelo
-- Construção do bundle BentoML
-- Testes (simulados)
-- Deploy (simulado)
+## Local Execution vs. CI/CD
 
-## Execução Local vs. CI/CD
+- **Local Execution**: All steps, including DVC with local storage, will function as expected.
+- **CI/CD**: If using DVC with local storage, the data pull step will fail. Consider the options mentioned above to resolve this.
 
-- **Execução Local**: Todos os passos, incluindo o DVC com armazenamento local, funcionarão conforme esperado.
-- **CI/CD**: Se estiver usando DVC com armazenamento local, o passo de pull dos dados falhará. Considere as opções mencionadas acima para resolver isso.
+## Monitoring and Iteration
 
-## Monitoramento e Iteração
-
-Use o MLflow UI para visualizar métricas e parâmetros:
+Use the MLflow UI to visualize metrics and parameters:
 
 ```
 mlflow ui
