@@ -37,12 +37,12 @@ jobs:
       run: | 
         # bentoml build
     
-    - name: Run tests (se houver)
+    - name: Run tests (if any)
       run: |
-        # Adicione seus testes aqui
+        # Add your tests here
         # pytest tests/
     
-    - name: Deploy (simulado)
+    - name: Deploy (simulated)
       run: |
-        echo "Simulando deploy do modelo..."
-        # Adicione seus comandos de deploy aqui
+        echo "Simulating model deployment..."
+        # Add your deploy commands here
