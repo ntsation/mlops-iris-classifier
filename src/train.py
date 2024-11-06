@@ -7,35 +7,35 @@ import mlflow.sklearn
 import bentoml
 import dvc.api
 
-# Configurar o DVC para carregar os dados
+# Configure DVC to load data
 data_url = dvc.api.get_url('data/iris.csv')
 df = pd.read_csv(data_url)
 
-# Preparar os dados
+# Prepare the data
 X = df.drop('target', axis=1)
 y = df['target']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Configurar o MLflow
+# Configure MLflow
 mlflow.set_experiment("iris_classification")
 
 with mlflow.start_run():
-    # Treinar o modelo
+    # Train the model
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
     
-    # Avaliar o modelo
+    # Evaluate the model
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     
-    # Registrar métricas e parâmetros no MLflow
+    # Register metrics and parameters in MLflow
     mlflow.log_param("n_estimators", 100)
     mlflow.log_metric("accuracy", accuracy)
     
-    # Salvar o modelo com MLflow
+    # Save the model with MLflow
     mlflow.sklearn.log_model(model, "model")
     
-    # Salvar o modelo com BentoML
+    # Save the model with BentoML
     bentoml.sklearn.save_model("iris_classifier", model)
 
-print(f"Modelo treinado e salvo. Acurácia: {accuracy}")
+print(f"Model trained and saved. Accuracy {accuracy}")
