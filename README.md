@@ -1,140 +1,119 @@
-# MLOps Project with Iris Classifier
+# Iris Classifier MLOps Project
 
-This project demonstrates a complete MLOps pipeline using an iris classifier as an example. It integrates various modern MLOps tools and practices, including data versioning, experiment tracking, model packaging, and continuous deployment.
-
-## Technologies Used
-
-- **Python**: Primary programming language
-- **scikit-learn**: For the classification model
-- **MLflow**: For experiment tracking and model registry
-- **BentoML**: For model packaging and serving
-- **DVC (Data Version Control)**: For data versioning
-- **GitHub Actions**: For CI/CD
+This project is an example of how to apply MLOps for sorting Iris flowers using BentoML, MLflow, DVC, and scikit-learn. The model is trained, saved, and served using BentoML, with experiment tracking via MLflow and data versioning with DVC.
 
 ## Project Structure
 
+The project structure is organized as follows:
+
 ```
-.
-├── .github
-│   └── workflows
-│       └── mlops_pipeline.yml
-├── data
-│   └── iris.csv
-├── models
-│   └── model.pkl
-├── src
-│   ├── train.py
-│   └── serve.py
-├── .dvc
-├── .gitignore
-├── bentofile.yaml
-├── requirements.txt
+mlops-iris-classifier/
+├── services/
+│ └── iris_service.py # BentoML Service to serve the trained model
+├── date/
+│ └── iris.csv # Iris Data (used for training)
+├── models/
+│ └── iris_classifier.pkl # Trained model (saved by MLflow and BentoML)
+├── train.py # Script to train the model and register with MLflow and BentoML
+├── requirements.txt # Project dependencies
 └── README.md
 ```
 
-## Setup
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/ntsation/project-mlops.git
-   cd project-mlops
+- **`services/iris_service.py`**: Contains the BentoML service that loads the model and exposes an API to make predictions.
+- **`train.py`**: Script that trains the classification model using Random Forest, records the results with MLflow, and saves the model with BentoML.
+- **`data/iris.csv`**: Data used for training (CSV file).
+- **`models/iris_classifier.pkl`**: File with the trained model, saved by BentoML and MLflow.
+- **`requirements.txt`**: Contains all the dependencies necessary for the project to function.
+
+## Requirements
+
+Before running the project, make sure you have Python 3.12+ installed.
+
+### Install dependencies
+
+1. Create a virtual environment:
+   ```bash
+   python -m venv .venv
    ```
 
-2. Create and activate a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
+2. Activate the virtual environment:
+   - On Linux/MacOS:
+     ```bash
+     source .venv/bin/activate
+     ```
+   - On Windows:
+     ```bash
+     .venvScriptsactivate
+     ```
 
 3. Install the dependencies:
-   ```
+   ```bash
    pip install -r requirements.txt
    ```
 
-4. Set up DVC:
-   ```
-   dvc init
-   dvc add data/iris.csv
-   ```
+### DVC Configuration
 
-   For local usage:
-   ```
-   dvc remote add -d localremote /path/to/local/storage
+This project uses DVC for data versioning. To configure DVC, run:
+
+1. Initialize the DVC:
+   ```bash
+   Divine Init
    ```
 
-   For Google Drive (recommended for CI/CD):
-   ```
-   dvc remote add -d myremote gdrive://your-drive-id
-   ```
-
-   After setting up the remote:
-   ```
-   dvc push
+2. Download the sample data:
+   ```bash
+   dvc pull
    ```
 
-## Usage
 
-### Training the Model
+## How to Run
 
-To train the model:
+### 1. Model Training
 
-```
-python src/train.py
-```
+To train the model, run the 'train.py' script. It will:
+- Load the 'date/iris.csv' data.
+- Train a Random Forest model.
+- Register the model and its metrics with MLflow.
+- Save the template using BentoML.
 
-This will train the model, log metrics with MLflow, and save the model using BentoML.
+Run the script with the following command:
 
-### Serving the Model
-
-To serve the model locally:
-
-```
-bentoml serve src/serve.py:svc
+```bash
+python train.py
 ```
 
-### Building the BentoML Bundle
+### 2. Serving the Model with BentoML
 
-To build a BentoML bundle:
+Once you've trained and saved the model, you can serve the model's API using BentoML. The service will be available locally.
 
+To run the BentoML service, run:
+
+```bash
+Bentoml serves services.iris_service
 ```
-bentoml build
+
+This will launch a server at the 'http://127.0.0.1:3000' URL where the API will be available.
+
+### 3. Making Predictions
+
+You can make predictions using an HTTP client (such as 'curl' or 'Postman'), sending an input array to the API. The input and output format will be a **NumpyNdarray**.
+
+Example of how to make a request using curl:
+
+```bash
+curl -X 'POST' 
+  'http://127.0.0.1:3000/classify' 
+  -H 'accept: application/json' 
+  -h 'content-type: application/json' 
+  -d '[[5.1, 3.5, 1.4, 0.2]]'
 ```
 
-## CI/CD Pipeline
+This will send a trait vector to the API, which will return the model's prediction.
 
-The file `.github/workflows/mlops_pipeline.yml` defines a CI/CD pipeline that is triggered on pushes to the main branch.
+## Technologies Used
 
-**Important Note on DVC and CI/CD:**
-If you're using DVC with local storage, the CI/CD pipeline on GitHub Actions will fail when trying to access the data in DVC. This is because local storage is not accessible in the remote CI/CD environment.
-
-To address this issue, you have a few options:
-
-1. Use a remote DVC storage solution like Google Drive, AWS S3, or similar. This will allow the CI/CD pipeline to access the data.
-   
-2. If you must use local storage, consider adding the data to the Git repository for CI/CD purposes. You can create a separate branch for CI/CD that includes the data.
-
-3. Modify the CI/CD pipeline to skip the DVC pull step when using local storage.
-
-For local execution, using local DVC storage will work without issues.
-
-The pipeline includes:
-
-- Dependency installation
-- DVC setup and pulling the data (may fail with local storage)
-- Model training
-- BentoML bundle build
-- Tests (simulated)
-- Deployment (simulated)
-
-## Local Execution vs. CI/CD
-
-- **Local Execution**: All steps, including DVC with local storage, will function as expected.
-- **CI/CD**: If using DVC with local storage, the data pull step will fail. Consider the options mentioned above to resolve this.
-
-## Monitoring and Iteration
-
-Use the MLflow UI to visualize metrics and parameters:
-
-```
-mlflow ui
-```
+- **BentoML**: Framework for serving and managing machine learning models.
+- **MLflow**: Model lifecycle management platform for tracking experiments and registering models.
+- **DVC**: Data version control, for dataset management in the project.
+- **scikit-learn**: Library for machine learning, used to train the classification model.
